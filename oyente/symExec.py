@@ -601,7 +601,11 @@ def sym_exec_block(params, block, pre_block, depth, func_call, current_func_name
         return stack
 
     current_gas_used = analysis["gas"]
-    if current_gas_used > global_params.GAS_LIMIT:
+    solver.push()
+    solver.add(current_gas_used <= global_params.GAS_LIMIT)
+    rst = solver.check()
+    solver.pop()
+    if rst == unsat:
         log.debug("Run out of gas. Terminating this path ... ")
         return stack
 
@@ -650,7 +654,7 @@ def sym_exec_block(params, block, pre_block, depth, func_call, current_func_name
         
         path_id = total_no_of_paths - 1
         if global_params.OUTPUT_PATH_GAS:
-            gas_info_output = "path no {}: gas usage {}".format(path_id, current_gas_used)
+            # gas_info_output = "path no {}: gas usage {}".format(path_id, current_gas_used)
             if global_params.WEB:
                 log.info(gas_info_output)
                 results['path_gas'][path_id] = current_gas_used
