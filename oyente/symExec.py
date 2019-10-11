@@ -602,7 +602,7 @@ def sym_exec_block(params, block, pre_block, depth, func_call, current_func_name
 
     current_gas_used = analysis["gas"]
     solver.push()
-    solver.add(ULE(current_gas_used, global_params.GAS_LIMIT))
+    solver.add(ULE(to_symbolic(current_gas_used), global_params.GAS_LIMIT))
     rst = solver.check()
     solver.pop()
     if rst == unsat:
