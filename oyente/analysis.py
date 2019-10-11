@@ -78,7 +78,15 @@ def CEIL_UDIV(x, y):
     """
     return If( UDIV(x, y) * y == x, UDIV(x, y), UDIV(x, y) + 1 )
 
+def UMAX2(x, y):
+    """
+    Return the larger value between `x` and `y`. Unsigned only.
+    When `x == y`, return `x`.
+    """
+    return If( UGE(x, y), x, y )
+
 Fn_Log = Function('log', BitVecSort(256), BitVecSort(256))
+call_cnt = 0
 
 def calculate_gas(opcode, stack, mem, global_state, analysis, solver):
     gas_increment = get_ins_cost(opcode) # base cost
@@ -144,16 +152,21 @@ def calculate_gas(opcode, stack, mem, global_state, analysis, solver):
             if address not in global_state:
                 gas_increment += GCOST["Gnewaccount"]
     elif opcode in ("CALL", "CALLCODE", "DELEGATECALL") and len(stack) > 2:
+        
+        varFn = BitVec(F'call_{call_cnt}', 256)
+        call_cnt += 1
+        gasTerm = to_symbolic(GCOST["Gcallvalue"]) + UMAX2(stack, varFn)
+        
         # Not fully correct yet
         gas_increment += GCOST["Gcall"]
         if isReal(stack[2]):
             if stack[2] != 0:
-                gas_increment += GCOST["Gcallvalue"]
+                gas_increment += gasTerm
         else:
             solver.push()
             solver.add(Not (stack[2] != 0))
             if check_sat(solver) == unsat:
-                gas_increment += GCOST["Gcallvalue"]
+                gas_increment += gasTerm
             solver.pop()
     elif opcode == "SHA3" and isReal(stack[1]):
         pass # Not handle
