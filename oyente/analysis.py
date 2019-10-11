@@ -77,7 +77,8 @@ def CEIL_UDIV(x, y):
     x UDIV y, but do ceiling instead of floor
     """
     return If( UDIV(x, y) * y == x, UDIV(x, y), UDIV(x, y) + 1 )
-    
+
+Fn_Log = Function('log', BitVecSort(256), BitVecSort(256))
 
 def calculate_gas(opcode, stack, mem, global_state, analysis, solver):
     gas_increment = get_ins_cost(opcode) # base cost
@@ -85,14 +86,14 @@ def calculate_gas(opcode, stack, mem, global_state, analysis, solver):
     # In some opcodes, gas cost is not only depend on opcode itself but also current state of evm
     # For symbolic variables, we only add base cost part for simplicity
     if opcode in ("LOG0", "LOG1", "LOG2", "LOG3", "LOG4") and len(stack) > 1:
-        gas_increment = gas_increment + to_symbolic(GCOST["Glogdata"]) * to_symbolic(stack[1])
+        gas_increment += to_symbolic(GCOST["Glogdata"]) * to_symbolic(stack[1])
     elif opcode == "EXP" and len(stack) > 1:
         if isReal(stack[1]) and stack[1] > 0:
             gas_increment += GCOST["Gexpbyte"] * (1 + math.floor(math.log(stack[1], 256)))
     elif opcode == "EXTCODECOPY" and len(stack) > 2:
-        gas_increment = gas_increment + to_symbolic(GCOST["Gcopy"]) * CEIL_UDIV(to_symbolic(stack[2]), 32)
+        gas_increment += to_symbolic(GCOST["Gcopy"]) * CEIL_UDIV(to_symbolic(stack[2]), 32)
     elif opcode in ("CALLDATACOPY", "CODECOPY") and len(stack) > 3:
-        gas_increment = gas_increment + to_symbolic(GCOST["Gcopy"]) * CEIL_UDIV(to_symbolic(stack[3]), 32)
+        gas_increment += to_symbolic(GCOST["Gcopy"]) * CEIL_UDIV(to_symbolic(stack[3]), 32)
     elif opcode == "SSTORE" and len(stack) > 1:
         if isReal(stack[1]):
             try:
@@ -167,7 +168,7 @@ def calculate_gas(opcode, stack, mem, global_state, analysis, solver):
 
 def update_analysis(analysis, opcode, stack, mem, global_state, path_conditions_and_vars, solver):
     gas_increment, gas_memory = calculate_gas(opcode, stack, mem, global_state, analysis, solver)
-    analysis["gas"] = analysis["gas"] + gas_increment
+    analysis["gas"] += gas_increment
     analysis["gas_mem"] = gas_memory
 
     if opcode == "CALL":
