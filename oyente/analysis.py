@@ -9,7 +9,6 @@ from utils import *
 import global_params
 
 log = logging.getLogger(__name__)
-call_cnt = 0
 
 # THIS IS TO DEFINE A SKELETON FOR ANALYSIS
 # FOR NEW TYPE OF ANALYSIS: add necessary details to the skeleton functions
@@ -87,8 +86,11 @@ def UMAX2(x, y):
     return If( UGE(x, y), x, y )
 
 Fn_Log = Function('log', BitVecSort(256), BitVecSort(256))
+call_cnt = 0
 
 def calculate_gas(opcode, stack, mem, global_state, analysis, solver):
+    global call_cnt
+    
     gas_increment = get_ins_cost(opcode) # base cost
     gas_memory = analysis["gas_mem"]
     # In some opcodes, gas cost is not only depend on opcode itself but also current state of evm
