@@ -19,7 +19,7 @@ def set_cur_file(c_file):
 
 def init_analysis():
     analysis = {
-        "gas": 0,
+        "gas": to_symbolic(0),
         "gas_mem": 0,
         "money_flow": [("Is", "Ia", "Iv")],  # (source, destination, amount)
         "reentrancy_bug":[],
