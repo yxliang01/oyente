@@ -157,7 +157,7 @@ def calculate_gas(opcode, stack, mem, global_state, analysis, solver):
         
         varFn = BitVec(F'call_{call_cnt}', 256)
         call_cnt += 1
-        gasTerm = to_symbolic(GCOST["Gcallvalue"]) + UMAX2(stack, varFn)
+        gasTerm = to_symbolic(GCOST["Gcallvalue"]) + UMAX2(to_symbolic(stack[0]), varFn)
         
         # Not fully correct yet
         gas_increment += GCOST["Gcall"]
