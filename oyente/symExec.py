@@ -22,6 +22,7 @@ from test_evm.global_test_params import (TIME_OUT, UNKNOWN_INSTRUCTION,
                                          EXCEPTION, PICKLE_PATH)
 from vulnerability import CallStack, TimeDependency, MoneyConcurrency, Reentrancy, AssertionFailure, ParityMultisigBug2, IntegerUnderflow, IntegerOverflow
 import global_params
+from collections import ChainMap
 
 log = logging.getLogger(__name__)
 
@@ -556,7 +557,7 @@ def full_sym_exec():
 
 def som_to_dict(input):
   if input.decl() == '+':
-    return {**som_to_dict_term(c) for c in input.children()}
+    return dict(ChainMap(*(som_to_dict_term(c) for c in input.children() ) ) )
   else:
     return som_to_dict_term(c)
     
