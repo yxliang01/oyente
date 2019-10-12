@@ -555,8 +555,21 @@ def full_sym_exec():
 
 
 def som_to_dict(input):
-  # TODO
-  return {}
+  if input.decl() == '+':
+    return {**som_to_dict_term(c) for c in input.children()}
+  else:
+    return som_to_dict_term(c)
+    
+def som_to_dict_term(term):
+  coefficient = 1
+  args = []
+  for t in term.children():
+    if is_const(t):
+      coefficient = int(str(t))
+    else:
+      args.append(t)
+  
+  return {str(term.decl()(*args) ): coefficient }
   
 # Symbolically executing a block from the start address
 def sym_exec_block(params, block, pre_block, depth, func_call, current_func_name):
