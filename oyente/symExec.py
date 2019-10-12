@@ -67,9 +67,9 @@ def initGlobalVars():
 #         solver = Solver()
     if global_params.PARALLEL:
       set_param('parallel.enable', True)
-    solver = Solver()
+      set_param("timeout", global_params.TIMEOUT)
 
-    solver.set("timeout", global_params.TIMEOUT)
+    solver = Solver()
 
     global MSIZE
     MSIZE = False
