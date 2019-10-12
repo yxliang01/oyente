@@ -563,6 +563,10 @@ def som_to_dict(input):
     
 z3_mul_decl = (to_symbolic(1) * to_symbolic(2)).decl()
 def som_to_dict_term(term):
+  
+  if is_const(term) and not is_var(term):
+    return {'const': int(str(term)) }
+  
   coefficient = 1
   
   if term.decl() == z3_mul_decl:
