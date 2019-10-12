@@ -551,6 +551,10 @@ def full_sym_exec():
     return sym_exec_block(params, 0, 0, 0, -1, 'fallback')
 
 
+def som_to_dict(input):
+  # TODO
+  return {}
+  
 # Symbolically executing a block from the start address
 def sym_exec_block(params, block, pre_block, depth, func_call, current_func_name):
     global solver
@@ -654,11 +658,12 @@ def sym_exec_block(params, block, pre_block, depth, func_call, current_func_name
         
         path_id = total_no_of_paths - 1
         if global_params.OUTPUT_PATH_GAS:
-            current_gas_used = simplify(current_gas_used)
-            # gas_info_output = "path no {}: gas usage {}".format(path_id, current_gas_used)
+            current_gas_used = simplify(current_gas_used, flat=True, mul_to_power=True, som=True, sort-sums=True)
+            gas_info_output = "path no {}: gas usage {}".format(path_id, current_gas_used)
             if global_params.WEB:
                 log.info(gas_info_output)
-                results['path_gas'][path_id] = current_gas_used
+                assert path_id not in results['path_gas']
+                results['path_gas'][path_id] = som_to_dict(current_gas_used)
             else:
                 print(gas_info_output)
 
