@@ -57,3 +57,5 @@ PARALLEL = 0
 
 # Iterable of targeted smart contract names
 TARGET_CONTRACTS = None
+
+call_cnt = 0
