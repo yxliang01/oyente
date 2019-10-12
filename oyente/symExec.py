@@ -561,15 +561,22 @@ def som_to_dict(input):
   else:
     return som_to_dict_term(c)
     
+z3_mul_decl = (to_symbolic(1) * to_symbolic(2)).decl()
 def som_to_dict_term(term):
   coefficient = 1
-  args = []
-  for t in term.children():
-    if is_const(t):
-      coefficient = int(str(t))
-    else:
-      args.append(t)
   
+  if term.decl() == z3_mul_decl:
+    args = []
+    for t in term.children():
+      if is_const(t):
+        coefficient = int(str(t))
+      else:
+        args.append(t)
+  
+    if len(args) == 1:
+      return { str(args[0]): coefficient }
+  else:
+    args = term.children()
   return {str(term.decl()(*args) ): coefficient }
   
 # Symbolically executing a block from the start address
