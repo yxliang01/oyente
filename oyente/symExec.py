@@ -554,9 +554,9 @@ def full_sym_exec():
         start_block_to_func_sig = get_start_block_to_func_sig()
     return sym_exec_block(params, 0, 0, 0, -1, 'fallback')
 
-
+z3_add_decl = (to_symbolic(1) + to_symbolic(2)).decl()
 def som_to_dict(input):
-  if input.decl() == '+':
+  if input.decl() == z3_add_decl:
     return dict(ChainMap(*(som_to_dict_term(c) for c in input.children() ) ) )
   else:
     return som_to_dict_term(c)
