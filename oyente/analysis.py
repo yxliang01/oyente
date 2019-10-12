@@ -183,6 +183,7 @@ def calculate_gas(opcode, stack, mem, global_state, analysis, solver):
 def update_analysis(analysis, opcode, stack, mem, global_state, path_conditions_and_vars, solver):
     gas_increment, gas_memory = calculate_gas(opcode, stack, mem, global_state, analysis, solver)
     analysis["gas"] += gas_increment
+    analysis["gas"] = simplify(analysis["gas"])
     analysis["gas_mem"] = gas_memory
 
     if opcode == "CALL":
