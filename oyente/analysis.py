@@ -58,7 +58,6 @@ def check_reentrancy_bug(path_conditions_and_vars, stack, global_state):
         log.info("=>>>>>> New PC: " + str(new_path_condition))
 
     solver = Solver()
-    solver.set("timeout", global_params.TIMEOUT)
     solver.add(path_condition)
     solver.add(new_path_condition)
     # 2300 is the outgas used by transfer and send.
@@ -220,7 +219,6 @@ def is_feasible(prev_pc, gstate, curr_pc):
     curr_pc += new_pc
     curr_pc += prev_pc
     solver = Solver()
-    solver.set("timeout", global_params.TIMEOUT)
     solver.add(curr_pc)
     if solver.check() == unsat:
         return False
@@ -263,7 +261,6 @@ def is_diff(flow1, flow2):
                        Not(flow1[i][1] == flow2[i][1]),
                        Not(flow1[i][2] == flow2[i][2]))
             solver = Solver()
-            solver.set("timeout", global_params.TIMEOUT)
             solver.add(tx_cd)
 
             if solver.check() == sat:
