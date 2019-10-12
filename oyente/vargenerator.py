@@ -3,6 +3,7 @@ class Generator:
         self.countstack = 0
         self.countdata = 0
         self.count = 0
+        self.countGasCall = 0
 
     def gen_stack_var(self):
         self.countstack += 1
@@ -36,6 +37,10 @@ class Generator:
     def gen_gas_var(self):
         self.count += 1
         return "gas_" + str(self.count)
+    
+    def gen_gas_call_var(self):
+        self.countGasCall += 1
+        return F"gas_call_{self.countGasCall}"
 
     def gen_gas_price_var(self):
         return "Ip"
