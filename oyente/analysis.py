@@ -84,11 +84,7 @@ def UMAX2(x, y):
     """
     return If( UGE(x, y), x, y )
 
-Fn_Log = Function('log', BitVecSort(256), BitVecSort(256))
-call_cnt = 0
-
 def calculate_gas(opcode, stack, mem, global_state, analysis, solver):
-    global call_cnt
     
     gas_increment = get_ins_cost(opcode) # base cost
     gas_memory = analysis["gas_mem"]
@@ -154,20 +150,19 @@ def calculate_gas(opcode, stack, mem, global_state, analysis, solver):
                 gas_increment += GCOST["Gnewaccount"]
     elif opcode in ("CALL", "CALLCODE", "DELEGATECALL") and len(stack) > 2:
         
-        varFn = BitVec(F'call_{call_cnt}', 256)
-        call_cnt += 1
-        gasTerm = to_symbolic(GCOST["Gcallvalue"]) + UMAX2(to_symbolic(stack[0]), varFn)
+        varFn = BitVec(F'call_{global_params.call_cnt}', 256)
+        global_params.call_cnt += 1
         
         # Not fully correct yet
-        gas_increment += GCOST["Gcall"]
+        gas_increment += GCOST["Gcall"] + UMAX2(to_symbolic(stack[0]), varFn)
         if isReal(stack[2]):
             if stack[2] != 0:
-                gas_increment += gasTerm
+                gas_increment += to_symbolic(GCOST["Gcallvalue"])
         else:
             solver.push()
             solver.add(Not (stack[2] != 0))
             if check_sat(solver) == unsat:
-                gas_increment += gasTerm
+                gas_increment += to_symbolic(GCOST["Gcallvalue"]) 
             solver.pop()
     elif opcode == "SHA3" and isReal(stack[1]):
         pass # Not handle
