@@ -566,7 +566,7 @@ def _som_to_dict(input):
   if input.decl() == z3_add_decl:
     return dict(ChainMap(*(som_to_dict_term(c) for c in input.children() ) ) )
   else:
-    return som_to_dict_term(c)
+    return som_to_dict_term(input)
     
 z3_mul_decl = (to_symbolic(1) * to_symbolic(2)).decl()
 def som_to_dict_term(term):
